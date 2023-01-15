@@ -2,6 +2,7 @@ const express = require('express');
 const apartments = require('./service');
 
 const app = express();
+const hostname = '127.0.0.1';
 
 const port = 4000;
 
@@ -30,6 +31,6 @@ app.use((err, req, res, next) => {
   return
 })
 
-app.listen(port, () => {
-  console.log(`Listening port http://localhost:${port}`);
+app.listen(port, hostname, () => {
+  console.log(`Listening port http://${hostname}:${port}`);
 })
