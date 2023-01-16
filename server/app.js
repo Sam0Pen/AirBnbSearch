@@ -14,9 +14,19 @@ app.use(
   })
 );
 
-app.use('/', async function(req, res, next) {
+app.get('/all/', async function(req, res, next) {
   try {
     let promise = await apartments.getApartments(req.query.limit)
+    res.json(promise)
+  } catch (err) {
+    console.error(`Error while getting apartments `, err.message);
+    next(err);
+  }
+});
+
+app.get('/search/', async function(req, res, next) {
+  try {
+    let promise = await apartments.getApartmentsWithText(req.query.text, req.query.limit)
     res.json(promise)
   } catch (err) {
     console.error(`Error while getting apartments `, err.message);
