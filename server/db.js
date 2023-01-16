@@ -4,7 +4,6 @@ const filepath = './apartment.db';
 
 function connectToDatabase() {
   if (fs.existsSync(filepath)) {
-    console.log('exists');
     return new sqlite3.Database(filepath);
   } else {
     const db = new sqlite3.Database(filepath, (error) => {
