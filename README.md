@@ -13,3 +13,5 @@ Server Dependencies
 Mobile Dependencies
 - expo - framework for the application
 - @expo/vector-icons - to get icons
+
+Both mobile and server needs and **`npm install`** command to start the whole application
