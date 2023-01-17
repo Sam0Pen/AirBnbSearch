@@ -1,13 +1,16 @@
+import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export const ApartmentItem = ({
-  city,
-  name,
-  room_type,
-  host_name,
-  neighbourhood_group,
-  neighbourhood,
-  state,
+const ApartmentItem = ({
+  item: {
+    city,
+    name,
+    room_type,
+    host_name,
+    neighbourhood_group,
+    neighbourhood,
+    state,
+  }
 }) => {
 
   return (
@@ -20,6 +23,12 @@ export const ApartmentItem = ({
     </View>
   )
 }
+
+const arePropsEqual = (prevProps, nextProps) => {
+  return prevProps.id === nextProps.id; 
+}
+
+export default memo(ApartmentItem, arePropsEqual);
 
 const styles = StyleSheet.create({
   item: {

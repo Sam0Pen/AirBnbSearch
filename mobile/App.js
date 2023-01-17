@@ -1,7 +1,8 @@
 import { AntDesign } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, FlatList, TextInput, Text, View } from 'react-native';
-import { ApartmentItem } from './src/components/ApartmentItem';
+import ApartmentItem from './src/components/ApartmentItem/ApartmentItem';
+import { EmptyList } from './src/components/EmptyList';
 import { useDebounce } from './src/helpers/UseDebounce';
 
 export default function App() {
@@ -12,8 +13,8 @@ export default function App() {
   const [ offset, setOffset ] = useState(1);
 
   const keyExtractor = (item, index) => index;
-  let itemNum = 100;
-  let initialLoadNumber = 50;
+  let itemNum = 50;
+  let initialLoadNumber = 20;
 
   const debouncedSearch = useDebounce(inputData, 1500);
 
@@ -27,44 +28,41 @@ export default function App() {
   const listItem = ({item}) => {
     return (
       <ApartmentItem
-        city={item.city}
-        name={item.name}
-        room_type={item.room_type}
-        host_name={item.host_name}
-        neighbourhood_group={item.neighbourhood_group}
-        neighbourhood={item.neighbourhood}
-        state={item.state}
+        item={item}
       />
     )
   }
 
   useEffect(() => {
-    setData([]);
-    setLimitedData([]);
     if (debouncedSearch) {
+      setData([]);
       fetch(`http://10.0.2.2:4000/search/?text=${inputData}&limit=400000`)
         .then((response) => response.json())
         .then((data) => setData(data))
         .then(() => setLoading(false))
         .catch((error) => console.error(error));
+      setOffset(1);
     } else {
       setLoading(false);
     }
+    console.log('data', data.length, 'limitedData', limitedData.length)
   }, [debouncedSearch])
 
   useEffect(()=> {
-    if(limitedData.length < data.length){  
-        if(offset == 1){
-            setLimitedData(data.slice(0,offset*initialLoadNumber ))
-        }      
-    }
-
-}, [data]); 
+    setLimitedData(data.slice(0,offset*initialLoadNumber )) 
+  }, [data]);
 
   const handleChange = (value) => {
     setInputData(value);
     setLoading(true);
   }
+
+  const clearField = () => {
+    setData([]);
+    setLimitedData([]);
+    setOffset(1);
+    setInputData('');
+  };
 
   return (
     <View style={styles.container}>
@@ -80,15 +78,17 @@ export default function App() {
           name='closecircle'
           size={24}
           color='#a7a7a7'
-          onPress={() => setInputData('')}
+          onPress={() => clearField()}
         />
       </View>
-      {loading ? <Text>Loading...</Text>
+      {loading ? <View style={styles.loading}><Text>Loading...</Text></View>
       : 
       <FlatList
         data={limitedData}
+        extraData={data}
         style={styles.list}
         renderItem={listItem}
+        ListEmptyComponent={<EmptyList />}
         initialNumToRender={initialLoadNumber}
         maxToRenderPerBatch={itemNum}
         updateCellsBatchingPeriod={itemNum/2}
@@ -129,5 +129,9 @@ const styles = StyleSheet.create({
     zIndex: 3,
     marginTop: 33,
     paddingRight: 32,
+  },
+  loading: {
+    display: 'flex',
+    alignItems: 'center',
   }
 });
